@@ -1,12 +1,9 @@
-ch = ['V','S','P','O','S','C','L','O','K','E','D','S','P','E','V']
-encoded = []
-decode = []
-
-for i in ch:
-	encoded[i] = chr(ord(ch[i]))
-
-for i in range(26):
-	for x in ch:
-		decode[x] = (encoded[x]-i)%26
-	print(decode)
-	
+from cryptography.fernet import Fernet
+message = 'test'
+text = bytes(message, 'utf8')
+key = Fernet.generate_key()
+cipher_suite = Fernet(key)
+cipher_text = cipher_suite.encrypt(text)
+print(cipher_text.decode())
+plain_text = cipher_suite.decrypt(cipher_text)
+print(plain_text)
