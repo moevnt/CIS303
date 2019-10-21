@@ -3,7 +3,7 @@ from threading import Thread
 from cryptography.fernet import Fernet
 
 addresses = {}
-clients= {}
+clients = {}
 
 
 HOST = ''
@@ -26,7 +26,7 @@ def handle_new_connection():
 		client.send(bytes("You have entered the chat. Enter your name and press enter", "utf8"))
 		addresses[client] = client_address
 		Thread(target=handle_client, args=(client,)).start()
-		client.send_key(bytes(cipher_suite))
+		#client.send_key(bytes(cipher_suite))
 		
 
 # single client
@@ -55,7 +55,7 @@ def broadcast(msg, prefix=""):
 	"""Sends messages to the chat"""
 	
 	for sock in clients:
-		sock.send(bytes(prefix, "utf8") + msg)
+		sock.send(bytes(prefix, "utf8")+msg)
 		
 		
 if __name__ == "__main__":
