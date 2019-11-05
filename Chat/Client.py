@@ -1,7 +1,9 @@
 import tkinter
 from socket import AF_INET, socket, SOCK_STREAM
 from threading import Thread
-from cryptography.fernet import Fernet
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import rsa, padding
 
 
 def receive():
@@ -9,6 +11,8 @@ def receive():
 	while True:
 		try:
 			msg = client_socket.recv(BUFFSIZE).decode('utf8')
+			msg = private_key.decrypt(msg)
+			msg = foreign_key.decode().decrypt(msg)
 			msg_list.insert(tkinter.END, msg)
 		except OSError:
 			break
@@ -18,8 +22,11 @@ def send(event=None):
 	"""Sends messages"""
 	msg = my_msg.get()
 	my_msg.set("")
+	
+	msg = msg.encode('utf8')
+	msg = public_key.encrypt(msg, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()),algorithm=hashes.SHA256(), label= None))
 
-	client_socket.send(bytes(msg, 'utf8'))
+	client_socket.send(msg)
 	if msg =="{EXIT}":
 		client_socket.close()
 		tk.quit()
@@ -62,10 +69,13 @@ else:
 
 BUFFSIZE = 1024
 ADDRRESS = (HOST, PORT)
-cipher_suite = ''
+private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048,backend=default_backend())
+public_key = private_key.public_key()
 
 client_socket = socket(AF_INET, SOCK_STREAM)
 client_socket.connect(ADDRRESS)
+client_socket.send(private_key.public_key().exportKey(format='PEM', passphrase=None, pkcs=1))
+foreign_key = client_socket.recv(BUFFSIZE)
 
 receive_thread = Thread(target=receive)
 receive_thread.start()
