@@ -3,7 +3,7 @@ from threading import Thread
 from cryptography.fernet import Fernet
 
 addresses = {}
-clients= {}
+clients = {}
 
 
 HOST = ''
@@ -15,6 +15,9 @@ cipher_suite = Fernet(key)
 
 SERVER = socket(AF_INET, SOCK_STREAM)
 SERVER.bind(ADDR)
+
+#def create_keys():
+
 
 
 def handle_new_connection():
