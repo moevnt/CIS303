@@ -74,7 +74,7 @@ public_key = private_key.public_key()
 
 client_socket = socket(AF_INET, SOCK_STREAM)
 client_socket.connect(ADDRRESS)
-client_socket.send(private_key.public_key().exportKey(format='PEM', passphrase=None, pkcs=1))
+client_socket.send(private_key.public_key())
 foreign_key = client_socket.recv(BUFFSIZE)
 
 receive_thread = Thread(target=receive)
